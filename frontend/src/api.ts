@@ -8,7 +8,8 @@ export interface Doc { id: string; title: string; content: string; source_type: 
 export interface Auth { token: string; role: string }
 export interface RagAnswer { answer: string; conversation_id: string; sources: { title: string; snippet: string }[] }
 
-const BASE = "/api/v1";
+const API_HOST = import.meta.env.VITE_API_URL || "https://beauty-aii.onrender.com";
+const BASE = `${API_HOST.replace(/\/$/, "")}/api/v1`;
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
