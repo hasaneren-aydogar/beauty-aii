@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+body { @apply bg-pearl text-ink font-body antialiased; touch-action: manipulation; }
+button { @apply select-none; }
+:focus-visible { outline: 3px solid #1F7A78; outline-offset: 2px; }
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center rounded-2xl px-8 py-4 text-lg font-semibold transition active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none; }
+  .btn-primary { @apply bg-lagoon text-white hover:bg-[#186462]; }
+  .btn-quiet { @apply bg-white text-ink border border-ink/15 hover:bg-blush/60; }
+  .input { @apply w-full rounded-xl border border-ink/20 bg-white px-4 py-3 text-base; }
+}

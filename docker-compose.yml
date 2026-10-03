@@ -1,0 +1,52 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-beauty}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-beauty}
+      POSTGRES_DB: ${POSTGRES_DB:-beauty}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-beauty} -d ${POSTGRES_DB:-beauty}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      args:
+        INSTALL_ML: ${INSTALL_ML:-false}
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-beauty}:${POSTGRES_PASSWORD:-beauty}@db:5432/${POSTGRES_DB:-beauty}
+      STORAGE_DIR: /data/storage
+      HAIRFAST_REPO_PATH: /ai-models/HairFastGAN
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - storage:/data/storage
+      - ./ai-models:/ai-models
+    ports:
+      - "8000:8000"
+    # GPU (real HairFastGAN): uncomment and install the NVIDIA Container Toolkit
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:
+  storage:
