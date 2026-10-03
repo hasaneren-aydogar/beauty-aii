@@ -42,8 +42,13 @@ app = FastAPI(title=settings.app_name, version="0.1.0", lifespan=lifespan,
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)
-app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origin_list, allow_credentials=False,
-                   allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")
